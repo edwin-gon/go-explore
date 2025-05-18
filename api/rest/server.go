@@ -1,21 +1,25 @@
 package rest
 
-import "net/http"
+import (
+	"log/slog"
+	"net/http"
+)
 
 type apiHandler struct{}
 
 func (apiHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusAccepted)
-	print("Hello World")
+	slog.Info("Hello World")
 }
 
 func NewRestAPI() {
-	http.HandleFunc("/api/func", func(w http.ResponseWriter, r *http.Request) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/api/func", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusAccepted)
-		print("Func call!")
+		slog.Info("Func Call Path")
 	})
 
-	http.Handle("/api", apiHandler{})
+	mux.Handle("/api", apiHandler{})
 
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8080", mux)
 }
